@@ -5,19 +5,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Car_WEB_API.Services
 {
-    public class OrderRepository : IRepository<Order>
+    public class OrderRepository : IRepository<UserOrder>
     {
+
         private readonly AppDBContext _dbContext;
+
         public OrderRepository(AppDBContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<Order> Add(Order entity)
+
+
+        public async Task<UserOrder> Add(UserOrder entity)
         {
             try
             {
-                _dbContext.Orders.Add(entity);
+                _dbContext.UserOrders.Add(entity);
                 await _dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -31,10 +35,10 @@ namespace Car_WEB_API.Services
         {
             try
             {
-                var item = await _dbContext.Orders.FindAsync(id);
+                var item = await _dbContext.UserOrders.FindAsync(id);
                 if (item != null)
                 {
-                    _dbContext.Orders.Remove(item);
+                    _dbContext.UserOrders.Remove(item);
                     await _dbContext.SaveChangesAsync();
                 }
             }
@@ -44,11 +48,11 @@ namespace Car_WEB_API.Services
             }
         }
 
-        public async Task<IEnumerable<Order>> GetAll()
+        public async Task<IEnumerable<UserOrder>> GetAll()
         {
             try
             {
-                return await _dbContext.Orders.ToListAsync();
+                return await _dbContext.UserOrders.ToListAsync();
             }
             catch (Exception ex)
             {
@@ -56,11 +60,11 @@ namespace Car_WEB_API.Services
             }
         }
 
-        public async Task<Order> GetById(int id)
+        public async Task<UserOrder> GetById(int id)
         {
             try
             {
-                return await _dbContext.Orders.FindAsync(id);
+                return await _dbContext.UserOrders.FindAsync(id);
             }
             catch (Exception ex)
             {
@@ -68,12 +72,19 @@ namespace Car_WEB_API.Services
             }
         }
 
-        public Task<User> GetUserByEmailAsync(string email)
+        public async Task<User> GetUserByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error occurred while retrieving user with email {email}.", ex);
+            }
         }
 
-        public async Task<Order> Update(Order entity)
+        public async Task<UserOrder> Update(UserOrder entity)
         {
             try
             {

@@ -16,5 +16,6 @@ namespace Car_WEB_API.Model
         public string Role { get; set; }
         public string? ResetPasswordToken { get; set; }
         public DateTime ResetPasswordExpiry { get; set; }
+        public List<UserOrder> UserOrders { get; set; }
     }
 }

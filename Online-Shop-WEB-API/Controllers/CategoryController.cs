@@ -8,11 +8,17 @@ namespace Car_WEB_API.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
+
+
         private readonly IRepository<Category> _categoryRepository;
+
+
         public CategoryController(IRepository<Category> categoryRepository)
         {
             _categoryRepository = categoryRepository;
         }
+
+
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetCategories()
@@ -29,6 +35,7 @@ namespace Car_WEB_API.Controllers
             {
                 return NotFound();
             }
+
             return Ok(item);
         }
 

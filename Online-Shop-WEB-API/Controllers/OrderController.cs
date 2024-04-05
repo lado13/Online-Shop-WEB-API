@@ -11,38 +11,52 @@ namespace Car_WEB_API.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly IRepository<Order> _orderRepository;
+        private readonly IRepository<UserOrder> _orderRepository;
         private readonly AppDBContext _appDBContext;
 
-        public OrderController(IRepository<Order> orderRepository, AppDBContext appDBContext = null)
+        public OrderController(IRepository<UserOrder> orderRepository, AppDBContext appDBContext = null)
         {
             _orderRepository = orderRepository;
             _appDBContext = appDBContext;
         }
 
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> GetOrders()
-        {
-            var orders = await (from op in _appDBContext.OrderProducts
-                                join p in _appDBContext.Products on op.ProductId equals p.Id
-                                join u in _appDBContext.Users on op.OrderId equals u.Id
-                                select new OrderDto
-                                {
-                                    OrderId =op.Id,
-                                    UserId = u.Id,
-                                    FirstName = u.FirstName,
-                                    LastName = u.LastName,
-                                    Email = u.Email,
-                                    Role = u.Role,
-                                    ProductId = p.Id,
-                                    Image = p.Image,
-                                    Title = p.Title,
-                                    Model = p.Model,
-                                    Price = p.Price
-                                }).ToListAsync();
 
-            return Ok(orders);
+
+
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAllOrders()
+        {
+            try
+            {
+                var orders = await _appDBContext.UserOrders
+                    .Include(o => o.Users)
+                    .Include(o => o.Products)
+                    .Select(o => new OrderInfoDto
+                    {
+                        OrderId = o.Id,
+                        UserId = o.UserId,
+                        Avatar = o.Users.Image,
+                        FirstName = o.Users.FirstName,
+                        LastName = o.Users.LastName,
+                        Email = o.Users.Email,
+                        Role = o.Users.Role,
+                        ProductId = o.ProductId,
+                        Image = o.Products.Image,
+                        Title = o.Products.Title,
+                        Model = o.Products.Model,
+                        Price = o.Products.Price,
+                        OrderDate = o.OrderDate.ToShortDateString(),
+
+                    }).ToListAsync();
+
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error retrieving orders: {ex.Message}");
+            }
         }
+
 
 
         [HttpGet("Get")]
@@ -57,82 +71,50 @@ namespace Car_WEB_API.Controllers
         }
 
 
-        [HttpPost("Add")]
-        public async Task<ActionResult> AddOrder([FromBody] Order order)
+        [HttpPost("Upload")]
+        public async Task<ActionResult<UserOrder>> CreateOrder(OrderDto orderDTO)
         {
-            try
+            var user = await _appDBContext.Users.FindAsync(orderDTO.UserId);
+
+            if (user == null)
             {
-                var item = await _orderRepository.Add(order);
-                return CreatedAtAction(nameof(GetOrder), new { id = item.Id }, item);
+                return NotFound("User not found.");
             }
-            catch (Exception ex)
+
+            foreach (var productId in orderDTO.ProductIds)
             {
-                return StatusCode(500, "An error occurred while adding the category.");
+                var product = await _appDBContext.Products.FindAsync(productId);
+
+                if (product == null)
+                {
+                    return NotFound($"Product with ID {productId} not found.");
+                }
+
+                var order = new UserOrder
+                {
+                    UserId = orderDTO.UserId,
+                    ProductId = productId,
+                    OrderDate = orderDTO.OrderDate
+                };
+
+                _appDBContext.UserOrders.Add(order);
             }
+
+            await _appDBContext.SaveChangesAsync();
+
+            return Ok(orderDTO);
         }
 
-        [HttpDelete("Delete")]
+
+
+
+
+
+        [HttpDelete("DeleteOrderById")]
         public async Task<IActionResult> RemoveOrder(int id)
         {
             await _orderRepository.Delete(id);
             return NoContent();
-        }
-
-
-        [HttpPut("Update")]
-        public async Task<IActionResult> UpdateOrder(int id, Order order)
-        {
-            if (id != order.Id)
-            {
-                return BadRequest();
-            }
-            await _orderRepository.Update(order);
-            return NoContent();
-        }
-
-        [HttpPost("Upload")]
-        public async Task<ActionResult<Order>> CreateOrder(Order orderDto)
-        {
-            try
-            {
-                var order = new Order
-                {
-                    UserId = orderDto.UserId,
-                    OrderDate = orderDto.OrderDate
-                };
-
-                _appDBContext.Orders.Add(order);
-
-                foreach (var productDto in orderDto.Products)
-                {
-                    var orderProduct = new OrderProduct
-                    {
-                        OrderId = orderDto.UserId,
-                        ProductId = productDto.ProductId
-                    };
-                    _appDBContext.OrderProducts.Add(orderProduct);
-                }
-                await _appDBContext.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"An error occurred while creating the order: {ex.Message}");
-            }
-        }
-
-
-        [HttpDelete("DeleteOrderById")]
-        public async Task<IActionResult> DeleteOrder(int orderId)
-        {
-            var order = await _appDBContext.OrderProducts.FindAsync(orderId);
-            if (order == null)
-            {
-                return NotFound();
-            }
-            _appDBContext.OrderProducts.Remove(order);
-            await _appDBContext.SaveChangesAsync();
-            return Ok();
         }
 
 

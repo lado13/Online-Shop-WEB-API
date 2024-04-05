@@ -38,25 +38,6 @@ namespace Car_WEB_API.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Car_WEB_API.Model.Order", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Orders");
-                });
-
             modelBuilder.Entity("Car_WEB_API.Model.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -130,7 +111,7 @@ namespace Car_WEB_API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Car_WEB_API.OrderProduct", b =>
+            modelBuilder.Entity("Car_WEB_API.Model.UserOrder", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,17 +119,22 @@ namespace Car_WEB_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("ProductId");
 
-                    b.ToTable("OrderProducts");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserOrders");
                 });
 
             modelBuilder.Entity("Car_WEB_API.Model.Product", b =>
@@ -162,18 +148,33 @@ namespace Car_WEB_API.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Car_WEB_API.OrderProduct", b =>
+            modelBuilder.Entity("Car_WEB_API.Model.UserOrder", b =>
                 {
-                    b.HasOne("Car_WEB_API.Model.Order", null)
-                        .WithMany("Products")
-                        .HasForeignKey("OrderId")
+                    b.HasOne("Car_WEB_API.Model.Product", "Products")
+                        .WithMany("UserOrders")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Car_WEB_API.Model.User", "Users")
+                        .WithMany("UserOrders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Products");
+
+                    b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("Car_WEB_API.Model.Order", b =>
+            modelBuilder.Entity("Car_WEB_API.Model.Product", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("UserOrders");
+                });
+
+            modelBuilder.Entity("Car_WEB_API.Model.User", b =>
+                {
+                    b.Navigation("UserOrders");
                 });
 #pragma warning restore 612, 618
         }

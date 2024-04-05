@@ -8,10 +8,9 @@ namespace Car_WEB_API.Data
         public AppDBContext(DbContextOptions<AppDBContext> options) : base(options) { }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Order> Orders { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<OrderProduct> OrderProducts { get; set; }
-      
+        public DbSet<UserOrder> UserOrders { get; set; }
+
 
 
 

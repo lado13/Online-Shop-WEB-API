@@ -17,12 +17,16 @@ namespace Car_WEB_API.Controllers
         private readonly IRepository<User> _userRepository;
         private readonly AppDBContext _appDBContext;
         private readonly IJwtService _jwtService;
+
+
         public UserController(IRepository<User> userRepository, AppDBContext appDBContext, IJwtService jwtService)
         {
             _userRepository = userRepository;
             _appDBContext = appDBContext;
             _jwtService = jwtService;
         }
+
+
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetUsers()
@@ -49,48 +53,46 @@ namespace Car_WEB_API.Controllers
             return NoContent();
         }
 
-        [HttpPut("Update")]
-        public async Task<IActionResult> UpdateUser(int id, User user)
-        {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-            await _userRepository.Update(user);
-            return NoContent();
-        }
 
         [HttpPost("Register")]
         public async Task<ActionResult> AddUser([FromBody] User user)
         {
             if (user == null)
                 return BadRequest();
+
             if (await CheckUserEmailExistAsync(user.Email))
                 return BadRequest(new { Message = "User Email Already Exist!!!" });
+
             if (await CheckUserNameExistAsync(user.FirstName))
                 return BadRequest(new { Message = "User Name Already Exist!!!" });
+
             user.Password = PasswordHasher.HashPassword(user.Password);
             user.Role = "User";
             user.Token = "";
+
             await _userRepository.Add(user);
             await _appDBContext.SaveChangesAsync();
+
             return Ok(new { Message = "User registered" });
         }
 
         private async Task<bool> CheckUserEmailExistAsync(string email)
              => await _appDBContext.Users.AnyAsync(u => u.Email == email);
+
         private async Task<bool> CheckUserNameExistAsync(string name)
             => await _appDBContext.Users.AnyAsync(u => u.FirstName == name);
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel user)
+        public async Task<IActionResult> Login([FromBody] LoginDto user)
         {
             if (user == null)
                 return BadRequest();
+
             if (user == null)
                 return Unauthorized();
 
             var existingUser = await _appDBContext.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+
             if (existingUser == null)
                 return NotFound(new { Message = "User not found !!!" });
 
@@ -98,6 +100,7 @@ namespace Car_WEB_API.Controllers
                 return BadRequest(new { Message = "Password is incorrect !!!" });
 
             var token = _jwtService.CreateJwt(existingUser);
+
             return Ok(new { Token = token, Message = "Login Success" });
         }
 

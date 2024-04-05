@@ -10,9 +10,13 @@ namespace Car_WEB_API.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
+
+
         private readonly IRepository<Product> _productsRepository;
         private readonly IRepository<Category> _categoriesRepository;
         private readonly AppDBContext _appDBContext;
+
+
 
         public ProductController(IRepository<Product> productsRepository, AppDBContext appDBContext, IRepository<Category> categoriesRepository)
         {
@@ -20,6 +24,8 @@ namespace Car_WEB_API.Controllers
             _appDBContext = appDBContext;
             _categoriesRepository = categoriesRepository;
         }
+
+
 
         [HttpGet("GetAllProduct")]
         public async Task<IActionResult> GetProducts()
@@ -62,19 +68,6 @@ namespace Car_WEB_API.Controllers
             }
         }
 
-        [HttpPost("Add")]
-        public async Task<IActionResult> AddProduct(Product product)
-        {
-            try
-            {
-                var item = await _productsRepository.Add(product);
-                return CreatedAtAction(nameof(GetProduct), new { id = item.Id }, item);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An error occurred while adding the product.");
-            }
-        }
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> RemoveProduct(int id)

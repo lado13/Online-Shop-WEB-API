@@ -41,7 +41,7 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IRepository<User>, UserRepository>();    
-builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
+builder.Services.AddScoped<IRepository<UserOrder>, OrderRepository>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 
 
