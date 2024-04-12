@@ -58,17 +58,49 @@ namespace Car_WEB_API.Controllers
         }
 
 
-
         [HttpGet("Get")]
         public async Task<IActionResult> GetOrder(int id)
         {
-            var item = await _orderRepository.GetById(id);
-            if (item == null)
+            try
             {
-                return NotFound();
+                var order = await _appDBContext.UserOrders
+                    .Include(o => o.Users)
+                    .Include(o => o.Products)
+                    .FirstOrDefaultAsync(o => o.Id == id);
+
+                if (order == null)
+                {
+                    return NotFound();
+                }
+
+                var orderDto = new OrderInfoDto
+                {
+                    OrderId = order.Id,
+                    UserId = order.UserId,
+                    Avatar = order.Users.Image,
+                    FirstName = order.Users.FirstName,
+                    LastName = order.Users.LastName,
+                    Email = order.Users.Email,
+                    Role = order.Users.Role,
+                    ProductId = order.ProductId,
+                    Image = order.Products.Image,
+                    Title = order.Products.Title,
+                    Model = order.Products.Model,
+                    Price = order.Products.Price,
+                    OrderDate = order.OrderDate.ToShortDateString()
+                };
+
+                return Ok(orderDto);
             }
-            return Ok(item);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error retrieving order: {ex.Message}");
+            }
         }
+
+
+
+
 
 
         [HttpPost("Upload")]

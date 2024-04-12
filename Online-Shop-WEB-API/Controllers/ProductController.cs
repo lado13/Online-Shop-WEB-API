@@ -1,6 +1,7 @@
 ﻿using Car_WEB_API.Data;
 using Car_WEB_API.Interfaces.IBaseRepository;
 using Car_WEB_API.Model;
+using Car_WEB_API.ViewModel.Product;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,26 +14,51 @@ namespace Car_WEB_API.Controllers
 
 
         private readonly IRepository<Product> _productsRepository;
-        private readonly IRepository<Category> _categoriesRepository;
         private readonly AppDBContext _appDBContext;
 
 
 
-        public ProductController(IRepository<Product> productsRepository, AppDBContext appDBContext, IRepository<Category> categoriesRepository)
+        public ProductController(IRepository<Product> productsRepository, AppDBContext appDBContext)
         {
             _productsRepository = productsRepository;
             _appDBContext = appDBContext;
-            _categoriesRepository = categoriesRepository;
         }
+
 
 
 
         [HttpGet("GetAllProduct")]
-        public async Task<IActionResult> GetProducts()
+        public async Task<IActionResult> GetAllProducts()
         {
-            var products = await _productsRepository.GetAll();
-            return Ok(products);
+            try
+            {
+                var products = await _appDBContext.Products
+                    .OrderBy(p => p.Id)
+                    .Select(p => new ProductDto
+                    {
+                        Id = p.Id,
+                        Title = p.Title,
+                        Model = p.Model,
+                        Price = p.Price,
+                        Image = p.Image,
+                        CategoryId = p.CategoryId,
+                        CategoryName = p.Category.Name
+                    })
+                    .ToListAsync();
+
+                var totalCount = await _appDBContext.Products.CountAsync();
+
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
+
+
+
+
 
         [HttpGet("Get")]
         public async Task<IActionResult> GetProduct(int id)
@@ -42,8 +68,23 @@ namespace Car_WEB_API.Controllers
             {
                 return NotFound();
             }
-            return Ok(item);
+
+            var productDto = new ProductDto
+            {
+                Id = item.Id,
+                Title = item.Title,
+                Model = item.Model,
+                Price = item.Price,
+                Image = item.Image,
+                CategoryId = item.CategoryId,
+                CategoryName = item.Category.Name
+            };
+
+            return Ok(productDto);
         }
+
+
+
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetProducts(int page = 1, int pageSize = 10)
@@ -55,7 +96,17 @@ namespace Car_WEB_API.Controllers
                 var products = await _appDBContext.Products
                     .OrderBy(p => p.Id)
                     .Skip(skip)
-                    .Take(pageSize)
+                .Take(pageSize)
+                    .Select(p => new ProductDto
+                    {
+                        Id = p.Id,
+                        Title = p.Title,
+                        Model = p.Model,
+                        Price = p.Price,
+                        Image = p.Image,
+                        CategoryId = p.CategoryId,
+                        CategoryName = p.Category.Name 
+                    })
                     .ToListAsync();
 
                 var totalCount = await _appDBContext.Products.CountAsync();
@@ -67,6 +118,13 @@ namespace Car_WEB_API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+
+
+
+
+
+
 
 
         [HttpDelete("Delete")]

@@ -62,7 +62,10 @@ namespace Car_WEB_API.Services
         {
             try
             {
-                return await _dbContext.Products.FindAsync(id);
+
+                return await _dbContext.Products
+                    .Include(p => p.Category)
+                    .FirstOrDefaultAsync(p => p.Id == id);
             }
             catch (Exception ex)
             {
