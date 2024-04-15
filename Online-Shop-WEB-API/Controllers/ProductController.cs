@@ -159,6 +159,24 @@ namespace Car_WEB_API.Controllers
             return Ok(products);
         }
 
+
+        [HttpGet("FilterByPrice")]
+        public async Task<IActionResult> FilterByPrice(decimal minPrice, decimal maxPrice)
+        {
+            if (minPrice < 0 || maxPrice < 0 || minPrice > maxPrice)
+                return BadRequest("Invalid price range");
+
+            var products = await _appDBContext.Products
+                .Where(p => p.Price >= minPrice && p.Price <= maxPrice)
+                .Select(p => new { p.Id, p.Title, p.Model, p.Price, p.Image })
+                .ToListAsync();
+
+            return Ok(products);
+        }
+
+
+
+
         [HttpPost("Upload")]
         public async Task<IActionResult> AddProducts([FromBody] Product product)
         {
