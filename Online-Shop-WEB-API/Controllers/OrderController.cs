@@ -45,7 +45,7 @@ namespace Car_WEB_API.Controllers
                         Title = o.Products.Title,
                         Model = o.Products.Model,
                         Price = o.Products.Price,
-                        OrderDate = o.OrderDate.ToShortDateString(),
+                        OrderDate = o.OrderDate.ToLongDateString(),
 
                     }).ToListAsync();
 
