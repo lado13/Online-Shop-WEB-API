@@ -27,6 +27,9 @@ namespace Car_WEB_API.Controllers
 
 
 
+
+        //Shows all products
+
         [HttpGet("GetAllProduct")]
         public async Task<IActionResult> GetAllProducts()
         {
@@ -58,7 +61,7 @@ namespace Car_WEB_API.Controllers
 
 
 
-
+        //Shows one specific product with a specific id
 
         [HttpGet("Get")]
         public async Task<IActionResult> GetProduct(int id)
@@ -84,7 +87,7 @@ namespace Car_WEB_API.Controllers
         }
 
 
-
+        //Shows all products by page
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetProducts(int page = 1, int pageSize = 10)
@@ -121,11 +124,7 @@ namespace Car_WEB_API.Controllers
 
 
 
-
-
-
-
-
+        //Deletes the product with the concrete id
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> RemoveProduct(int id)
@@ -133,6 +132,12 @@ namespace Car_WEB_API.Controllers
             await _productsRepository.Delete(id);
             return NoContent();
         }
+
+
+
+
+
+        //Updates a product with a specific id
 
         [HttpPut("Update")]
         public async Task<IActionResult> UpdateProduct(int id, Product product)
@@ -143,7 +148,10 @@ namespace Car_WEB_API.Controllers
             }
             await _productsRepository.Update(product);
             return NoContent();
-        }  
+        }
+
+
+        //Live Search searches for products by name
 
         [HttpGet("SearchByTitle")]
         public async Task<IActionResult> Search(string keyword)
@@ -159,6 +167,9 @@ namespace Car_WEB_API.Controllers
             return Ok(products);
         }
 
+
+
+        //Filters products by price
 
         [HttpGet("FilterByPrice")]
         public async Task<IActionResult> FilterByPrice(decimal minPrice, decimal maxPrice)
@@ -176,6 +187,11 @@ namespace Car_WEB_API.Controllers
 
 
 
+
+
+
+
+        //Loads the product into the database
 
         [HttpPost("Upload")]
         public async Task<IActionResult> AddProducts([FromBody] Product product)
@@ -197,6 +213,10 @@ namespace Car_WEB_API.Controllers
                 return StatusCode(500, new { Error = "An error occurred while adding the product." });
             }
         }
+
+
+
+        //Filters products by category and displays them as pages
 
         [HttpGet("ProductByCategory")]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductsByCategory(int categoryId, int pageNumber = 1, int pageSize = 10)

@@ -5,13 +5,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Car_WEB_API.Services
 {
+
+    //Abstraction is used
+
     public class UserRepository : IRepository<User>
     {
+
         private readonly AppDBContext _dbContext;
+
+
         public UserRepository(AppDBContext dbContext)
         {
             _dbContext = dbContext;
         }
+
+
+
+        //Adds a user to the database
 
         public async Task<User> Add(User entity)
         {
@@ -26,6 +36,10 @@ namespace Car_WEB_API.Services
             }
             return entity;
         }
+
+
+
+        //Removes a user from the database
 
         public async Task Delete(int id)
         {
@@ -44,6 +58,9 @@ namespace Car_WEB_API.Services
             }
         }
 
+
+        //returns all users
+
         public async Task<IEnumerable<User>> GetAll()
         {
             try
@@ -56,6 +73,10 @@ namespace Car_WEB_API.Services
             }
         }
 
+
+
+        //return a specific user with a specific ID
+
         public async Task<User> GetById(int id)
         {
             try
@@ -67,6 +88,12 @@ namespace Car_WEB_API.Services
                 throw new Exception($"An error occurred while retrieving user with ID {id}.", ex);
             }
         }
+
+
+
+
+
+        //Updates user data from the database
 
         public async Task<User> Update(User entity)
         {
@@ -82,6 +109,11 @@ namespace Car_WEB_API.Services
             }
             return entity;
         }
+
+
+
+
+        //Searching for customers by email
 
         public async Task<User> GetUserByEmailAsync(string email)
         {

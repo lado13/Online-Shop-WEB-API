@@ -5,13 +5,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Car_WEB_API.Services
 {
+
+    //Abstraction is used
+
     public class CategoryRepository : IRepository<Category>
     {
+
+
         private readonly AppDBContext _dbContext;
+
+
         public CategoryRepository(AppDBContext dbContext)
         {
             _dbContext = dbContext;
         }
+
+
+
+        //Adds a new category
 
         public async Task<Category> Add(Category entity)
         {
@@ -26,6 +37,9 @@ namespace Car_WEB_API.Services
             }
             return entity;
         }
+
+
+        //Removes a category from the database
 
         public async Task Delete(int id)
         {
@@ -44,6 +58,10 @@ namespace Car_WEB_API.Services
             }
         }
 
+
+
+        //Displays all categories
+
         public async Task<IEnumerable<Category>> GetAll()
         {
             try
@@ -55,6 +73,11 @@ namespace Car_WEB_API.Services
                 throw new Exception("An error occurred while retrieving all categories.", ex);
             }
         }
+
+
+
+        //Returns one concrete category with id
+
         public async Task<Category> GetById(int id)
         {
             try
@@ -71,6 +94,10 @@ namespace Car_WEB_API.Services
         {
             throw new NotImplementedException();
         }
+
+
+
+        //Updates the category
 
         public async Task<Category> Update(Category entity)
         {

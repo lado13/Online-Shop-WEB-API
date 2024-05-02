@@ -28,12 +28,19 @@ namespace Car_WEB_API.Controllers
 
 
 
+
+        //Shows all users of the website
+
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetUsers()
         {
             var item = await _userRepository.GetAll();
             return Ok(item);
         }
+
+
+
+        //Shows a specific user with a specific ID
 
         [HttpGet("Get")]
         public async Task<IActionResult> GetUser(int id)
@@ -46,6 +53,11 @@ namespace Car_WEB_API.Controllers
             return Ok(item);
         }
 
+
+
+
+        //Removes a user from the database
+
         [HttpDelete("Delete")]
         public async Task<IActionResult> RemoveUser(int id)
         {
@@ -53,6 +65,9 @@ namespace Car_WEB_API.Controllers
             return NoContent();
         }
 
+
+        //Registers a user on the site !!!
+        //If you want to register with the admin role, change the role to admin in the method!!!
 
         [HttpPost("Register")]
         public async Task<ActionResult> AddUser([FromBody] User user)
@@ -76,11 +91,21 @@ namespace Car_WEB_API.Controllers
             return Ok(new { Message = "User registered" });
         }
 
+
+        //Checks if the user's email exists in the database
+
         private async Task<bool> CheckUserEmailExistAsync(string email)
              => await _appDBContext.Users.AnyAsync(u => u.Email == email);
 
+
+        //Checks if the user's name exists in the database
+
         private async Task<bool> CheckUserNameExistAsync(string name)
             => await _appDBContext.Users.AnyAsync(u => u.FirstName == name);
+
+
+
+        //Authenticates the user
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto user)
@@ -104,6 +129,9 @@ namespace Car_WEB_API.Controllers
             return Ok(new { Token = token, Message = "Login Success" });
         }
 
+
+        //Send a request "Token" to reset the user's password
+
         [HttpPost("request")]
         public IActionResult RequestPasswordReset(string email)
         {
@@ -118,6 +146,10 @@ namespace Car_WEB_API.Controllers
             _appDBContext.SaveChanges();
             return Ok(new { Token = token, ResetPasswordExpiry = time, Email = email, Message = "Reset token generated successfully" });
         }
+
+
+
+        //Updates the user's password in the database
 
         [HttpPost("reset")]
         public IActionResult ResetPassword(string email, string token, string newPassword)
@@ -138,6 +170,12 @@ namespace Car_WEB_API.Controllers
             return Ok(new { Message = "Password recovery successfully" });
         }
 
+
+
+
+
+
+        //Updates user data such as name and picture
 
         [HttpPut("EditUserInfo")]
         public async Task<IActionResult> UpdateUser(int id, UserDto userUpdate)

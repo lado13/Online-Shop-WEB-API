@@ -9,6 +9,9 @@ namespace Car_WEB_API.Services
 {
     public class JwtService : IJwtService
     {
+
+        //Creates a user token at login
+
         public string CreateJwt(User user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
@@ -37,6 +40,7 @@ namespace Car_WEB_API.Services
 
 
 
+        //Creates a temporary user token for password recovery
 
         public string RequestJwt(User user)
         {

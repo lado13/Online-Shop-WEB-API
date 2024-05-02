@@ -4,9 +4,17 @@ namespace Car_WEB_API.Helpers
 {
     public class PasswordHasher
     {
+
+
         private static readonly int SaltSize = 16;
         private static readonly int HashSize = 20;
         private static readonly int Iterations = 1000;
+
+
+
+
+        //Hashes the password in the database
+
         public static string HashPassword(string password)
         {
             byte[] salt = new byte[SaltSize];
@@ -22,6 +30,10 @@ namespace Car_WEB_API.Helpers
                 return base64Hash;
             }
         }
+
+
+
+        //Password verification in the database
 
         public static bool VerifyPassword(string password, string base64Hash)
         {

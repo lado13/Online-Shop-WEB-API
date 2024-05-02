@@ -19,6 +19,7 @@ namespace Car_WEB_API.Controllers
         }
 
 
+        //Displays all categories
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetCategories()
@@ -26,6 +27,9 @@ namespace Car_WEB_API.Controllers
             var item = await _categoryRepository.GetAll();
             return Ok(item);
         }
+
+
+        //Returns one concrete category with id
 
         [HttpGet("Get")]
         public async Task<IActionResult> GetCategory(int id)
@@ -39,13 +43,17 @@ namespace Car_WEB_API.Controllers
             return Ok(item);
         }
 
+
+
+        //Adds a category
+
         [HttpPost("Add")]
         public async Task<ActionResult> AddCategory(Category category)
         {
             try
             {
                 var item = await _categoryRepository.Add(category);
-                return CreatedAtAction(nameof(GetCategory), new { id = item.Id}, item);
+                return CreatedAtAction(nameof(GetCategory), new { id = item.Id }, item);
             }
             catch (Exception ex)
             {
@@ -53,12 +61,21 @@ namespace Car_WEB_API.Controllers
             }
         }
 
+
+
+
+        //Removes a category
+
         [HttpDelete("Delete")]
         public async Task<IActionResult> RemoveCategory(int id)
         {
-            await _categoryRepository.Delete(id);   
+            await _categoryRepository.Delete(id);
             return NoContent();
         }
+
+
+
+        //Updates the category
 
         [HttpPut("Update")]
         public async Task<IActionResult> UpdateCategory(int id, Category category)
@@ -66,15 +83,15 @@ namespace Car_WEB_API.Controllers
             if (id != category.Id)
             {
                 return BadRequest();
-            }   
+            }
             await _categoryRepository.Update(category);
             return NoContent();
         }
 
 
 
-     
-        
+
+
 
 
     }

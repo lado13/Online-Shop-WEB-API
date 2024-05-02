@@ -14,9 +14,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+//Service for database communication
+
 builder.Services.AddDbContext<AppDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+
+//Token service
 
 builder.Services.AddAuthentication(x =>
 {
@@ -38,6 +45,9 @@ builder.Services.AddAuthentication(x =>
 
 
 
+
+//All services
+
 builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IRepository<User>, UserRepository>();    
@@ -54,6 +64,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+
+//Middleware to communicate with the frontend
 
 app.UseCors(Option =>
     Option.WithOrigins("http://localhost:4200")

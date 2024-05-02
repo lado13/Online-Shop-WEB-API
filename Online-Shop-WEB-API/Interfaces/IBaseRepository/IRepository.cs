@@ -4,6 +4,9 @@ namespace Car_WEB_API.Interfaces.IBaseRepository
 {
     public interface IRepository<T> where T : class
     {
+
+        //Abstraction is used
+
         Task<T> GetById(int id);
         Task<IEnumerable<T>> GetAll();
         Task<T> Add(T entity);

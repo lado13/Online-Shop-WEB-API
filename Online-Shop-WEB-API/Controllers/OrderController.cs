@@ -11,6 +11,8 @@ namespace Car_WEB_API.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
+
+
         private readonly IRepository<UserOrder> _orderRepository;
         private readonly AppDBContext _appDBContext;
 
@@ -21,7 +23,7 @@ namespace Car_WEB_API.Controllers
         }
 
 
-
+        //Returns all customer orders
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllOrders()
@@ -57,6 +59,10 @@ namespace Car_WEB_API.Controllers
             }
         }
 
+
+
+
+        //Retrieves a specific single customer order by id
 
         [HttpGet("Get")]
         public async Task<IActionResult> GetOrder(int id)
@@ -101,7 +107,7 @@ namespace Car_WEB_API.Controllers
 
 
 
-
+        //This method sends the order to the database
 
         [HttpPost("Upload")]
         public async Task<ActionResult<UserOrder>> CreateOrder(OrderDto orderDTO)
@@ -138,9 +144,7 @@ namespace Car_WEB_API.Controllers
         }
 
 
-
-
-
+        //Deletes a customer order from the database
 
         [HttpDelete("DeleteOrderById")]
         public async Task<IActionResult> RemoveOrder(int id)
